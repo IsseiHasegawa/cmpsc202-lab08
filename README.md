@@ -1,6 +1,6 @@
 # Lab 08: Navigating Weighted Graphs with Dijkstra's Algorithm
 
-Name(s): _______________________  
+Name(s): Issei Hasegawa 
 
 ## Introduction
 You are already familiar with Breadth-First Search (BFS) and Depth-First Search (DFS) for exploring graphs. However, what happens when all edges are not created equal? In this lab, we will explore Dijkstra's Algorithm, which allows us to find the shortest path between two vertices in a *weighted* graph.
