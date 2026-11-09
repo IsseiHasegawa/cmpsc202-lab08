@@ -97,8 +97,8 @@ Standard Dijkstra's algorithm only understands *edges* and *edge weights*. It do
 
 1. How should you represent the paths with stairs in your graph so the algorithm never tries to use them?
 
-   > *Your answer here*
+   > Omit paths with stairs from the graph, or remove their edges from the adjacency lists. If a sidewalk is represented by two directed edges, remove both directions. With no edge representing a stairway, Dijkstra's algorithm cannot include it in a route. Keep the intersection vertices and any other accessible paths connected to them.
 
 2. How can you account for the $3$-minute waiting time at busy crosswalk intersections using *only* edge weights? (Hint: Think about how you could modify the weights of edges connecting to that intersection).
 
-   > *Your answer here*
+   > Represent each accessible two-way sidewalk with two directed edges. For an edge u → v, set its weight to 2 minutes plus the waiting time at u: **5 minutes if u is a busy crosswalk, and 2 minutes otherwise**. This charges the extra 3 minutes whenever the robot leaves a busy intersection. The reverse edge v → u uses the waiting time at v, so the two directions may have different weights. For example, if u is busy and v is not, u → v has weight 5 and v → u has weight 2. This also charges a wait when departing a busy starting intersection, but does not charge a wait merely for arriving at the destination, because the robot does not leave it. All edge weights remain nonnegative, so standard Dijkstra's algorithm applies.
