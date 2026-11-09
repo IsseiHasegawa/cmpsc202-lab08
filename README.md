@@ -38,17 +38,19 @@ Starting at Node $A$, trace Dijkstra's algorithm. Fill in the tracker table belo
 *   **`dist` Array:** The current known shortest distance from $A$ to each node. Use $\infty$ for unreachable/unknown nodes.
 *   **`visited` Set:** The set of nodes that have been finalized and whose shortest distances are known.
 
+Each row shows the state after checking the current node's unvisited neighbors and adding the current node to `visited`. Initially, $A$ has distance 0, all other nodes have distance $\infty$, and `visited` is empty.
+
 | Step | Current Node | Neighbors to Check | `dist` Map | `visited` Set | 
 | :--- | :--- | :--- | :--- | :--- | 
-| 0 | $A$ | $B$, $C$ | $A$:0, $B$:4, $C$:2 | { } | 
-| 1 | | | | | 
-| 2 | | | | | 
-| 3 | | | | | 
-| 4 | | | | | 
+| 0 | $A$ | $B$, $C$ | $A$:0, $B$:4, $C$:2, $D$:$\infty$, $E$:$\infty$ | {A} |
+| 1 | $C$ | $B$, $D$, $E$ | $A$:0, $B$:3, $C$:2, $D$:10, $E$:12 | {A, C} |
+| 2 | $B$ | $D$ | $A$:0, $B$:3, $C$:2, $D$:8, $E$:12 | {A, C, B} |
+| 3 | $D$ | $E$ | $A$:0, $B$:3, $C$:2, $D$:8, $E$:10 | {A, C, B, D} |
+| 4 | $E$ | None | $A$:0, $B$:3, $C$:2, $D$:8, $E$:10 | {A, C, B, D, E} |
 
 **Conceptual Question:**
 When we add a vertex to the "visited" set, why are we 100% certain we have found the absolute shortest path to that node? 
-> *Your answer here*
+> Dijkstra's algorithm assumes that all edge weights are nonnegative. At each step, it selects the unvisited vertex with the smallest tentative distance. To see why this distance is final, consider any path to that vertex and the first unvisited vertex on that path. The preceding vertex has already been finalized, so its outgoing edge has been relaxed, giving the first unvisited vertex a tentative distance no greater than the cost of the path prefix reaching it. The selected vertex's tentative distance is no greater than that tentative distance, and the remaining edges cannot reduce the path's cost because their weights are nonnegative. Therefore, no path can be shorter than the selected vertex's current distance. Since that distance is also the cost of an actual discovered path, it is the true shortest distance and can safely be finalized.
 
 ---
 
