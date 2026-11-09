@@ -15,13 +15,13 @@ BFS is excellent for finding the shortest path in an unweighted graph. Let's see
 
 **Questions:**
 1. If you run a standard BFS starting at Node $A$, looking for Node $D$, which path will the BFS algorithm discover first? Why?
-   > Standard BFS will discover **A → D** first. BFS explores vertices level by level according to the number of edges from the starting vertex, without considering edge weights. Since D is directly adjacent to A, it is discovered at depth 1, before the three-edge path A → B → C → D, even though the direct edge has a much larger weight.
+   > BFS finds **A → D** first because D is only one edge away from A. BFS checks nodes one level at a time and does not look at edge weights. So even though the direct edge is much heavier, BFS finds it before the three-edge route A → B → C → D.
 
 2. What is the total weight of the path BFS found? What is the total weight of the alternative path? 
-   > The total weight of the path found by BFS, **A → D**, is **100**. The alternative path, **A → B → C → D**, has a total weight of **2 + 3 + 4 = 9**. Although the alternative path uses more edges, its total weight is smaller.
+   > The path BFS finds, **A → D**, has a total weight of **100**. The other route, **A → B → C → D**, has a total weight of **2 + 3 + 4 = 9**. It takes more edges, but its total weight is much lower.
 
 3. How does the definition of "shortest path" change when moving from unweighted graphs to weighted graphs?
-   > In an unweighted graph, the shortest path is the path with the fewest edges. In a weighted graph, the shortest path is the path with the smallest sum of edge weights, which may use more edges. For example, A → D uses only one edge but has a weight of 100, while A → B → C → D uses three edges but has a total weight of 9, making it the shortest path in the weighted graph.
+   > In an unweighted graph, "shortest" means using the fewest edges. In a weighted graph, it means having the lowest total edge weight, even if that takes more edges. Here, A → D uses one edge but costs 100, while A → B → C → D uses three edges and costs only 9. That makes A → B → C → D the shortest path when we account for weights.
 
 ---
 
@@ -38,7 +38,7 @@ Starting at Node $A$, trace Dijkstra's algorithm. Fill in the tracker table belo
 *   **`dist` Array:** The current known shortest distance from $A$ to each node. Use $\infty$ for unreachable/unknown nodes.
 *   **`visited` Set:** The set of nodes that have been finalized and whose shortest distances are known.
 
-Each row shows the state after checking the current node's unvisited neighbors and adding the current node to `visited`. Initially, $A$ has distance 0, all other nodes have distance $\infty$, and `visited` is empty.
+In each row, I have checked the current node's unvisited neighbors and added the current node to `visited`. Before step 0, $A$ has distance 0, every other node has distance $\infty$, and `visited` is empty.
 
 | Step | Current Node | Neighbors to Check | `dist` Map | `visited` Set | 
 | :--- | :--- | :--- | :--- | :--- | 
@@ -50,7 +50,7 @@ Each row shows the state after checking the current node's unvisited neighbors a
 
 **Conceptual Question:**
 When we add a vertex to the "visited" set, why are we 100% certain we have found the absolute shortest path to that node? 
-> Dijkstra's algorithm assumes that all edge weights are nonnegative. At each step, it selects the unvisited vertex with the smallest tentative distance. To see why this distance is final, consider any path to that vertex and the first unvisited vertex on that path. The preceding vertex has already been finalized, so its outgoing edge has been relaxed, giving the first unvisited vertex a tentative distance no greater than the cost of the path prefix reaching it. The selected vertex's tentative distance is no greater than that tentative distance, and the remaining edges cannot reduce the path's cost because their weights are nonnegative. Therefore, no path can be shorter than the selected vertex's current distance. Since that distance is also the cost of an actual discovered path, it is the true shortest distance and can safely be finalized.
+> This works because all edge weights are nonnegative and we always choose the unvisited node with the smallest distance so far. Consider any possible path to the node we chose. The first unvisited node on that path comes after a visited node whose distance is already final. When we processed that visited node, we checked the edge between them, so the first unvisited node's recorded distance is at most the cost of reaching it along this path. The node we chose has a distance no larger than that, and the remaining edges cannot lower the path's cost because none are negative. So no alternative path can beat the distance we already have. Since we have also found an actual path with that distance, we can safely mark it as final.
 
 ---
 
@@ -64,20 +64,20 @@ Dijkstra's algorithm relies on an assumption about the weights. Let's see what h
 Trace Dijkstra's algorithm starting from Node $A$ to find the shortest path to Node $C$.
 
 1. Which node does Dijkstra's algorithm visit first after $A$?
-   > Dijkstra's algorithm visits **C** first after A because its tentative distance is **1**, which is smaller than B's tentative distance of **2**.
+   > It visits **C** next. After checking A's neighbors, the distances are **1 for C** and **2 for B**, so C is chosen first.
 
 2. What will Dijkstra's algorithm declare as the shortest path to $C$, and what is its weight?
-   > Dijkstra's algorithm declares **A → C** as the shortest path, with a total weight of **1**. It selects C and finalizes its distance before processing B.
+   > It reports **A → C**, with a total weight of **1**. C is chosen and its distance is marked as final before B gets processed.
 
 3. Look at the graph manually. What is the *actual* shortest path from $A$ to $C$, and what is its total weight? 
-   > Assuming paths do not repeat vertices, the actual shortest path is **A → B → C**, with a total weight of **2 + (−5) = −3**, which is smaller than the direct path's weight of 1.
+   > If we do not repeat vertices, the actual shortest path is **A → B → C**. Its total weight is **2 + (−5) = −3**, which is lower than the direct route's weight of 1.
 
 4. **The Trap:** Explain exactly *why* Dijkstra's algorithm failed to find the correct shortest path in this scenario.
-   > Dijkstra's algorithm assumes all edge weights are nonnegative, allowing it to finalize the unvisited vertex with the smallest tentative distance. Here, it finalizes C at distance 1 before processing B, whose tentative distance is 2. However, the negative edge B → C makes the path through B cost −3. Therefore, C is finalized too early: a larger tentative distance to B can lead to a smaller total distance to C, invalidating Dijkstra's finalization guarantee.
+   > Dijkstra's algorithm relies on edge weights being nonnegative when it marks the closest unvisited node's distance as final. Here, it marks C's distance as 1 before checking B, since B's distance is 2. But the −5 edge from B to C makes the route through B cost only −3. C's distance was marked as final too early. Even though B is farther from A at first, going through B gives a shorter route to C, so the usual reason for trusting a finalized distance no longer holds.
 
 **Bonus: Why did the original weights fail to demonstrate the intended problem?**
 
-> With the original weights AB = 2, BC = −4, and AC = 5, Dijkstra's algorithm processes B before C because 2 < 5. Processing B updates C's tentative distance to 2 + (−4) = −2 before C is finalized. Therefore, it correctly finds the shortest simple path A → B → C, so the example does not demonstrate the intended failure. Negative edges invalidate Dijkstra's correctness guarantee, but they do not cause it to fail in every case.
+> With the original weights, AB = 2, BC = −4, and AC = 5, the algorithm checks B before C because 2 is less than 5. While processing B, it changes C's distance to 2 + (−4) = −2. This happens before C's distance is marked as final, so it finds the correct shortest simple path, A → B → C. That is why the original example does not show the intended failure. A negative edge means Dijkstra's algorithm is no longer guaranteed to work, but it can still give the right answer in some cases.
 
 ---
 
@@ -101,8 +101,8 @@ Standard Dijkstra's algorithm only understands *edges* and *edge weights*. It do
 
 1. How should you represent the paths with stairs in your graph so the algorithm never tries to use them?
 
-   > Omit paths with stairs from the graph, or remove their edges from the adjacency lists. If a sidewalk is represented by two directed edges, remove both directions. With no edge representing a stairway, Dijkstra's algorithm cannot include it in a route. Keep the intersection vertices and any other accessible paths connected to them.
+   > I would leave stairways out of the graph, or remove their edges from the adjacency lists if the graph already exists. If a sidewalk has an edge in each direction, both need to be removed. That way, the algorithm has no way to choose a stairway. The intersections themselves and their other accessible paths can stay in the graph.
 
 2. How can you account for the $3$-minute waiting time at busy crosswalk intersections using *only* edge weights? (Hint: Think about how you could modify the weights of edges connecting to that intersection).
 
-   > Represent each accessible two-way sidewalk with two directed edges. For an edge u → v, set its weight to 2 minutes plus the waiting time at u: **5 minutes if u is a busy crosswalk, and 2 minutes otherwise**. This charges the extra 3 minutes whenever the robot leaves a busy intersection. The reverse edge v → u uses the waiting time at v, so the two directions may have different weights. For example, if u is busy and v is not, u → v has weight 5 and v → u has weight 2. This also charges a wait when departing a busy starting intersection, but does not charge a wait merely for arriving at the destination, because the robot does not leave it. All edge weights remain nonnegative, so standard Dijkstra's algorithm applies.
+   > I would give each accessible two-way sidewalk two directed edges, one in each direction. For u → v, I would add the waiting time at u to the 2-minute travel time. The edge would cost **5 minutes if u is a busy crosswalk, or 2 minutes otherwise**. This counts the extra 3 minutes when the robot leaves a busy intersection. The reverse edge uses the waiting time at v, so the two directions can have different weights. For example, if u is busy and v is not, u → v costs 5 and v → u costs 2. This also counts the wait if the robot starts at a busy intersection, but adds no wait just for arriving at its destination, since it does not leave that intersection. All the weights are still nonnegative, so Dijkstra's algorithm can use them.
