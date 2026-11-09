@@ -42,7 +42,7 @@ Each row shows the state after checking the current node's unvisited neighbors a
 
 | Step | Current Node | Neighbors to Check | `dist` Map | `visited` Set | 
 | :--- | :--- | :--- | :--- | :--- | 
-| 0 | $A$ | $B$, $C$ | $A$:0, $B$:4, $C$:2, $D$:$\infty$, $E$:$\infty$ | {A} |
+| 0 | $A$ | $B$, $C$ | $A$:0, $B$:4, $C$:2, $D: \infty$, $E: \infty$ | {A} |
 | 1 | $C$ | $B$, $D$, $E$ | $A$:0, $B$:3, $C$:2, $D$:10, $E$:12 | {A, C} |
 | 2 | $B$ | $D$ | $A$:0, $B$:3, $C$:2, $D$:8, $E$:12 | {A, C, B} |
 | 3 | $D$ | $E$ | $A$:0, $B$:3, $C$:2, $D$:8, $E$:10 | {A, C, B, D} |
