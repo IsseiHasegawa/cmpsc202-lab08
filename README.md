@@ -64,16 +64,20 @@ Dijkstra's algorithm relies on an assumption about the weights. Let's see what h
 Trace Dijkstra's algorithm starting from Node $A$ to find the shortest path to Node $C$.
 
 1. Which node does Dijkstra's algorithm visit first after $A$?
-   > *Your answer here*
+   > Dijkstra's algorithm visits **C** first after A because its tentative distance is **1**, which is smaller than B's tentative distance of **2**.
 
 2. What will Dijkstra's algorithm declare as the shortest path to $C$, and what is its weight?
-   > *Your answer here*
+   > Dijkstra's algorithm declares **A → C** as the shortest path, with a total weight of **1**. It selects C and finalizes its distance before processing B.
 
 3. Look at the graph manually. What is the *actual* shortest path from $A$ to $C$, and what is its total weight? 
-   > *Your answer here*
+   > Assuming paths do not repeat vertices, the actual shortest path is **A → B → C**, with a total weight of **2 + (−5) = −3**, which is smaller than the direct path's weight of 1.
 
 4. **The Trap:** Explain exactly *why* Dijkstra's algorithm failed to find the correct shortest path in this scenario.
-   > *Your answer here*
+   > Dijkstra's algorithm assumes all edge weights are nonnegative, allowing it to finalize the unvisited vertex with the smallest tentative distance. Here, it finalizes C at distance 1 before processing B, whose tentative distance is 2. However, the negative edge B → C makes the path through B cost −3. Therefore, C is finalized too early: a larger tentative distance to B can lead to a smaller total distance to C, invalidating Dijkstra's finalization guarantee.
+
+**Bonus: Why did the original weights fail to demonstrate the intended problem?**
+
+> With the original weights AB = 2, BC = −4, and AC = 5, Dijkstra's algorithm processes B before C because 2 < 5. Processing B updates C's tentative distance to 2 + (−4) = −2 before C is finalized. Therefore, it correctly finds the shortest simple path A → B → C, so the example does not demonstrate the intended failure. Negative edges invalidate Dijkstra's correctness guarantee, but they do not cause it to fail in every case.
 
 ---
 
